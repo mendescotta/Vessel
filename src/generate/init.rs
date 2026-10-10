@@ -29,9 +29,9 @@ pub fn cmdline(p: &crate::profile::Profile, label: &str) -> String {
     let l = &p.live;
     let mut c = format!(
         "root=live:CDLABEL={label} ro init=/sbin/init rd.luks=0 rd.md=0 rd.dm=0 \
-         rd.overlay=1 loglevel=4 vconsole.unicode=1 \
+         rd.overlay=1 loglevel={} vconsole.unicode=1 \
          vconsole.keymap={} locale.LANG={} live.user={}",
-        l.keymap, l.locale, l.user
+        l.loglevel, l.keymap, l.locale, l.user
     );
     if p.init == Init::Dinit {
         c.push_str(" live.init_system=dinit");

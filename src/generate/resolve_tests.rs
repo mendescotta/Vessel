@@ -177,6 +177,17 @@ fn live_cmdline_uses_current_overlay_option() {
 }
 
 #[test]
+fn live_console_loglevel_is_configurable_and_validated() {
+    let mut p = Profile::new_default();
+    assert!(init::cmdline(&p, "L").contains(" loglevel=4 "));
+    p.live.loglevel = 3;
+    assert!(init::cmdline(&p, "L").contains(" loglevel=3 "));
+    assert!(crate::profile::validate::validate(&p).1.is_some());
+    p.live.loglevel = 9;
+    assert!(crate::profile::validate::validate(&p).1.is_none());
+}
+
+#[test]
 fn musl_profile_uses_the_musl_repositories() {
     let mut p = Profile::new_default();
     p.arch = "x86_64-musl".into();

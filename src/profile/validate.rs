@@ -184,6 +184,12 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
         }
     }
 
+    if p.live.loglevel > 8 {
+        error(
+            "live",
+            "kernel console loglevel must be between 0 and 8".into(),
+        );
+    }
     if !valid_hostname(&p.live.hostname) {
         error("live", format!("hostname {:?} must be 1-63 letters, digits or '-', not starting or ending with '-'", p.live.hostname));
     }

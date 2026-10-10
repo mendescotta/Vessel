@@ -83,6 +83,7 @@ pub struct Services {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Live {
+    pub loglevel: u8,
     pub hostname: String,
     pub locale: String,
     pub keymap: String,
@@ -93,6 +94,7 @@ pub struct Live {
 impl Default for Live {
     fn default() -> Self {
         Self {
+            loglevel: 4,
             hostname: "void-live".into(),
             locale: "en_US.UTF-8".into(),
             keymap: "us".into(),
