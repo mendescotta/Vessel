@@ -32,6 +32,9 @@ exclude = []
 [services]
 enable = []
 disable = []
+
+[live]
+loglevel = 4                    # kernel console level, 0–8; default 4
 ```
 
 Optional `overlay_dir` (copied over the rootfs) and `post_rootfs_hook` (run in the rootfs chroot) are
@@ -40,6 +43,9 @@ relative to the profile. Examples are in `examples/`. The `voidlab` preset needs
 There is no default, because the build installs with `-y`, which imports a remote repository's signing key
 without asking: only point it at a URL whose key you trust. `WORK` and `OUT` override the script's scratch and
 output folders.
+
+`[live].loglevel = 3` hides ordinary kernel errors from the boot console while
+keeping them in the kernel log for `dmesg`. It changes console output only.
 
 ## Build
 
@@ -53,7 +59,7 @@ Targets `x86_64` and `x86_64-musl` (set `arch` in the profile; musl has no multi
 
 - [void-mklive](https://github.com/void-linux/void-mklive): the Void live-ISO tooling the generated script follows; the `vmklive` dracut module in `assets/vmklive/` comes from it (license in `assets/vmklive/COPYING`).
 - [noid-linux/noid-mklive](https://github.com/noid-linux/noid-mklive): the dinit-aware fork of void-mklive; the dinit changes in `assets/vmklive/` are adapted from it.
-- [dinit-chimera](https://github.com/chimera-linux/dinit-chimera) and [Chimera Linux](https://chimera-linux.org/): the dinit service suite the `dinit` option builds on.
+- [dinit-void](https://github.com/mendescotta/dinit-void): Void boot and shutdown services used by the `dinit` option.
 - [Void Linux](https://voidlinux.org/) and [xbps](https://github.com/void-linux/xbps).
 
 Licensed under GPL-3.0-or-later.
