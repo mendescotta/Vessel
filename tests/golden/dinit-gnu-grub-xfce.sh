@@ -123,7 +123,7 @@ chroot "$ROOTFS" xbps-reconfigure -fa
 
 # --- 4. configure: overlay, identity, services, hook ---
 info "Copying overlay"
-cp -a "$HERE/overlay/." "$ROOTFS/"
+cp -a --no-preserve=ownership "$HERE/overlay/." "$ROOTFS/"
 printf '%s\n' "$LIVE_HOSTNAME" > "$ROOTFS/etc/hostname"
 ln -sf "/usr/share/zoneinfo/$LIVE_TIMEZONE" "$ROOTFS/etc/localtime"
 if [ -f "$ROOTFS/etc/rc.conf" ]; then

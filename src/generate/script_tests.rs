@@ -168,6 +168,7 @@ fn overlay_and_hook_use_fixed_output_names() {
     let (_, p) = golden_profiles().pop().unwrap();
     let s = gen(p);
     assert!(s.contains("\"$HERE/overlay/.\""));
+    assert!(s.contains("cp -a --no-preserve=ownership"));
     assert!(s.contains("\"$HERE/hooks/post_rootfs.sh\""));
     assert!(!s.contains("/somewhere/"));
 }

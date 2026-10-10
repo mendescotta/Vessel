@@ -298,7 +298,7 @@ fn configure(s: &mut String, p: &Profile) {
     if p.overlay_dir.is_some() {
         let _ = writeln!(
             s,
-            "info \"Copying overlay\"\ncp -a \"$HERE/{OVERLAY_DIR}/.\" \"$ROOTFS/\""
+            "info \"Copying overlay\"\ncp -a --no-preserve=ownership \"$HERE/{OVERLAY_DIR}/.\" \"$ROOTFS/\""
         );
     }
     s.push_str(
