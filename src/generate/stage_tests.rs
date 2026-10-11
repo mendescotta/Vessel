@@ -88,5 +88,10 @@ fn stage_text_only_for_owned_roles() {
     let grub_bios = bootloader::stage(B::Grub, true, false);
     assert!(grub_bios.contains("i386-pc-eltorito"));
     assert!(!grub_bios.contains("grub-mkstandalone"));
-    assert!(bootloader::stage(B::Refind, false, true).contains("refind_x64.efi"));
+    let refind = bootloader::stage(B::Refind, false, true);
+    assert!(refind.contains("refind_x64.efi"));
+    assert!(refind.contains("refind_linux.conf"));
+    assert!(refind.contains("$CMDLINE"));
+    assert!(refind.contains("include themes/RONBM/theme.conf"));
+    assert!(refind.contains("cp -a \"$THEME/.\""));
 }

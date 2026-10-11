@@ -135,9 +135,20 @@ rm -rf "$WORK/efi-refind"
 mkdir -p "$WORK/efi-refind/EFI/BOOT" "$WORK/efi-refind/boot" "$ISODIR/boot/refind"
 cp /usr/share/refind/refind_x64.efi "$WORK/efi-refind/EFI/BOOT/BOOTX64.EFI"
 cp "$ISODIR/boot/vmlinuz" "$ISODIR/boot/initrd" "$WORK/efi-refind/boot/"
+# Use Voyage's installed theme for the live menu too. rEFInd needs its icon
+# assets beside the EFI binary even with a manually configured Linux entry.
+cp -a /usr/share/refind/icons "$WORK/efi-refind/EFI/BOOT/"
+THEME=/usr/share/voyage/backend/refind-theme/RONBM
+if [ -d "$THEME" ]; then
+    mkdir -p "$WORK/efi-refind/EFI/BOOT/themes/RONBM"
+    cp -a "$THEME/." "$WORK/efi-refind/EFI/BOOT/themes/RONBM/"
+fi
+echo "\"Boot $MENU_TITLE\" \"$CMDLINE\"" > "$WORK/efi-refind/boot/refind_linux.conf"
 {
 	echo "timeout 5"
 	echo "scanfor manual"
+	echo "textonly false"
+	[ ! -d "$THEME" ] || echo "include themes/RONBM/theme.conf"
 	echo "menuentry \"$MENU_TITLE\" {"
 	echo "	loader /boot/vmlinuz"
 	echo "	initrd /boot/initrd"

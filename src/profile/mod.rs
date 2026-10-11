@@ -70,6 +70,9 @@ pub struct Packages {
     pub extra: Vec<String>,
     #[serde(default)]
     pub exclude: Vec<String>,
+    /// Keep the downloaded package archives in the live image for offline installs.
+    #[serde(default)]
+    pub include_cache: bool,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]

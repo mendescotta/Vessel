@@ -105,10 +105,17 @@ cp "$ROOTFS/boot/vmlinuz-$KVER" "$ISODIR/boot/vmlinuz"
 
     section(&mut s, 6, "squashfs", "dmsquash-live layout");
     s.push_str("rm -f \"$ROOTFS/etc/resolv.conf\"\numount_chroot\n");
-    s.push_str(
-        "# The cache only holds the .xbps files downloaded for this build; shipping it roughly doubles the image.\n\
-         if [ -d \"$ROOTFS/var/cache/xbps\" ]; then\n\tfind \"$ROOTFS/var/cache/xbps\" -mindepth 1 -delete\nfi\n",
-    );
+    if !p.packages.include_cache {
+        s.push_str(
+            "# The cache only holds the .xbps files downloaded for this build; shipping it roughly doubles the image.\n\
+             if [ -d \"$ROOTFS/var/cache/xbps\" ]; then\n\tfind \"$ROOTFS/var/cache/xbps\" -mindepth 1 -delete\nfi\n",
+        );
+    } else {
+        s.push_str(
+            "# Keep the complete xbps download cache in the live image for offline installs.\n\
+             [ -n \"$(find \"$ROOTFS/var/cache/xbps\" -maxdepth 1 -type f -name '*.xbps' -print -quit)\" ] || die \"package cache is empty; cannot build the offline ISO\"\n",
+        );
+    }
     s.push_str(init::squashfs_stage(p.init));
 
     section(&mut s, 7, "bootloaders", &active_summary(&active));

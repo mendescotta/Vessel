@@ -346,20 +346,46 @@ fn only_the_official_void_key_is_copied_into_the_rootfs() {
 }
 
 #[test]
-fn package_cache_is_emptied_before_the_rootfs_is_packed() {
+fn package_cache_policy_is_applied_before_the_rootfs_is_packed() {
     for (name, p) in golden_profiles() {
+        let include_cache = p.packages.include_cache;
         let script = gen(p);
-        let clean = script
-            .find("$ROOTFS/var/cache/xbps")
-            .unwrap_or_else(|| panic!("{name} never cleans the xbps package cache"));
         let pack = script
             .find("mkfs.ext3 -q")
             .unwrap_or_else(|| panic!("{name} has no image step"));
-        assert!(
-            clean < pack,
-            "{name} cleans the xbps cache after packing the rootfs"
-        );
+        let cache = script.find("$ROOTFS/var/cache/xbps");
+        if include_cache {
+            assert!(
+                cache.is_some_and(|at| at < pack),
+                "{name} does not retain its package cache before packing"
+            );
+            assert!(
+                script.contains("package cache is empty"),
+                "{name} does not reject an empty offline cache"
+            );
+            assert!(!script.contains("find \"$ROOTFS/var/cache/xbps\" -mindepth 1 -delete"));
+        } else {
+            assert!(
+                cache.is_some_and(|at| at < pack),
+                "{name} never cleans the xbps cache before packing"
+            );
+            assert!(script.contains("find \"$ROOTFS/var/cache/xbps\" -mindepth 1 -delete"));
+        }
     }
+}
+
+#[test]
+fn include_package_cache_keeps_archives_and_rejects_an_empty_cache() {
+    let mut p = Profile::new_default();
+    p.packages.include_cache = true;
+    let script = gen(p);
+    let cache = script
+        .find("Keep the complete xbps download cache")
+        .unwrap();
+    let pack = script.find("mkfs.ext3 -q").unwrap();
+    assert!(cache < pack);
+    assert!(script.contains("package cache is empty; cannot build the offline ISO"));
+    assert!(!script.contains("find \"$ROOTFS/var/cache/xbps\" -mindepth 1 -delete"));
 }
 
 #[test]
