@@ -74,7 +74,11 @@ fn seeds_dinit_gnome_host() {
     assert!(p.repos.presets.contains(&RepoPreset::Voidlab));
     assert!(p.repos.presets.contains(&RepoPreset::Nonfree));
     assert_eq!(p.repos.custom, vec!["https://example.org/repo".to_string()]);
-    assert_eq!(p.packages.extra, vec!["firefox".to_string()]);
+    // Preserve the explicitly installed full GNOME meta beyond the core default.
+    assert_eq!(
+        p.packages.extra,
+        vec!["gnome".to_string(), "firefox".to_string()]
+    );
     assert_eq!(p.services.enable, vec!["sshd".to_string()]);
     assert!(crate::profile::validate::validate(&p).1.is_some());
 }
