@@ -17,7 +17,7 @@ pub const GRAPHICAL_SERVICES: &[&str] = &["dbus", "elogind", "NetworkManager"];
 
 pub fn desktop_packages(d: Desktop) -> &'static [&'static str] {
     match d {
-        Desktop::Gnome => &["gnome"],
+        Desktop::Gnome => &["gnome-core"],
         Desktop::Cosmic => &["cosmic-desktop"],
         Desktop::Cinnamon => &["cinnamon"],
         Desktop::Xfce => &["xfce-core"],

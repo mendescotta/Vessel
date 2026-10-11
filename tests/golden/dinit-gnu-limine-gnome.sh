@@ -97,6 +97,9 @@ fi
 rm -rf "$WORK"
 mkdir -p "$ROOTFS/var/db/xbps/keys" "$ROOTFS/etc/xbps.d" "$ISODIR/boot" "$OUT"
 touch "$WORK/.vessel-work"
+# Kernel package triggers run dracut during the initial install transaction.
+printf 'KEYMAP=%s\n' "$LIVE_KEYMAP" > "$ROOTFS/etc/vconsole.conf"
+printf 'LANG=%s\n' "$LIVE_LOCALE" > "$ROOTFS/etc/locale.conf"
 # Only the official Void signing key is pre-trusted in the image (it signs the
 # main, nonfree, multilib and multilib/nonfree repositories); other keys on the
 # host (third-party repos) are not copied. Pinned by fingerprint, not by the
@@ -109,7 +112,7 @@ ignorepkg=nano
 VESSEL_IGNORE
 info "Installing 24 packages into $ROOTFS"
 XBPS_ARCH="$ARCH" xbps-install -S -y -r "$ROOTFS" -C "$ROOTFS/etc/xbps.d" "${REPO_ARGS[@]}" \
-	'linux' 'base-system-dinit' 'dinit-void' 'dracut' 'binutils' 'xz' 'device-mapper' 'dhclient' 'dracut-network' 'openresolv' 'dbus' 'elogind' 'polkit' 'NetworkManager' 'xorg-minimal' 'xorg-fonts' 'mesa-dri' 'pipewire' 'wireplumber' 'xdg-user-dirs' 'gnome' 'lightdm' 'lightdm-gtk3-greeter' 'firefox'
+	'linux' 'base-system-dinit' 'dinit-void' 'dracut' 'binutils' 'xz' 'device-mapper' 'dhclient' 'dracut-network' 'openresolv' 'dbus' 'elogind' 'polkit' 'NetworkManager' 'xorg-minimal' 'xorg-fonts' 'mesa-dri' 'pipewire' 'wireplumber' 'xdg-user-dirs' 'gnome-core' 'lightdm' 'lightdm-gtk3-greeter' 'firefox'
 mount_chroot
 cp /etc/resolv.conf "$ROOTFS/etc/resolv.conf"
 chroot "$ROOTFS" xbps-reconfigure -fa
@@ -121,6 +124,7 @@ if [ -f "$ROOTFS/etc/rc.conf" ]; then
 	printf 'KEYMAP=%s\nTIMEZONE=%s\n' "$LIVE_KEYMAP" "$LIVE_TIMEZONE" >> "$ROOTFS/etc/rc.conf"
 fi
 printf 'LANG=%s\n' "$LIVE_LOCALE" > "$ROOTFS/etc/locale.conf"
+printf 'KEYMAP=%s\n' "$LIVE_KEYMAP" > "$ROOTFS/etc/vconsole.conf"
 if [ -f "$ROOTFS/etc/default/libc-locales" ]; then
 	sed -i "s|^#[[:space:]]*\($LIVE_LOCALE[[:space:]]\)|\1|" "$ROOTFS/etc/default/libc-locales"
 	chroot "$ROOTFS" xbps-reconfigure -f glibc-locales

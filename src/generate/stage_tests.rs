@@ -93,5 +93,6 @@ fn stage_text_only_for_owned_roles() {
     assert!(refind.contains("refind_linux.conf"));
     assert!(refind.contains("$CMDLINE"));
     assert!(refind.contains("include themes/RONBM/theme.conf"));
+    assert!(refind.contains("THEME=\"$ROOTFS/usr/share/voyage/backend/refind-theme/RONBM\""));
     assert!(refind.contains("cp -a \"$THEME/.\""));
 }

@@ -82,7 +82,7 @@ fn required_packages_dinit_gnome_lightdm() {
         "base-system-dinit",
         "dinit-void",
         "dracut",
-        "gnome",
+        "gnome-core",
         "lightdm",
         "lightdm-gtk3-greeter",
         "dbus",

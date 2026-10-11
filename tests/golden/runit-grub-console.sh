@@ -105,6 +105,9 @@ fi
 rm -rf "$WORK"
 mkdir -p "$ROOTFS/var/db/xbps/keys" "$ROOTFS/etc/xbps.d" "$ISODIR/boot" "$OUT"
 touch "$WORK/.vessel-work"
+# Kernel package triggers run dracut during the initial install transaction.
+printf 'KEYMAP=%s\n' "$LIVE_KEYMAP" > "$ROOTFS/etc/vconsole.conf"
+printf 'LANG=%s\n' "$LIVE_LOCALE" > "$ROOTFS/etc/locale.conf"
 # Only the official Void signing key is pre-trusted in the image (it signs the
 # main, nonfree, multilib and multilib/nonfree repositories); other keys on the
 # host (third-party repos) are not copied. Pinned by fingerprint, not by the
@@ -126,6 +129,7 @@ if [ -f "$ROOTFS/etc/rc.conf" ]; then
 	printf 'KEYMAP=%s\nTIMEZONE=%s\n' "$LIVE_KEYMAP" "$LIVE_TIMEZONE" >> "$ROOTFS/etc/rc.conf"
 fi
 printf 'LANG=%s\n' "$LIVE_LOCALE" > "$ROOTFS/etc/locale.conf"
+printf 'KEYMAP=%s\n' "$LIVE_KEYMAP" > "$ROOTFS/etc/vconsole.conf"
 if [ -f "$ROOTFS/etc/default/libc-locales" ]; then
 	sed -i "s|^#[[:space:]]*\($LIVE_LOCALE[[:space:]]\)|\1|" "$ROOTFS/etc/default/libc-locales"
 	chroot "$ROOTFS" xbps-reconfigure -f glibc-locales
