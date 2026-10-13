@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5fb488"/>
+      <stop offset="1" stop-color="#2f6b4c"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eafff2"/>
+    </linearGradient>
+    <linearGradient id="facet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eafff2"/>
+      <stop offset="1" stop-color="#b3ded1"/>
+    </linearGradient>
+    <linearGradient id="liquid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a6e5d2"/>
+      <stop offset="1" stop-color="#72c9a7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Match Voyage's green squircle and soft highlight. -->
+  <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#bg)"/>
+  <ellipse cx="64" cy="30" rx="46" ry="20" fill="#ffffff" opacity="0.08"/>
+
+  <!-- Faceted Erlenmeyer flask, centered on the tile. -->
+  <path d="M53 27 H75 V53 L98 94 Q101 101 94 103 H34 Q27 101 30 94 L53 53 Z"
+        fill="url(#glass)"/>
+  <path d="M64 27 H75 V53 L98 94 Q101 101 94 103 H64 Z" fill="url(#facet)"/>
+  <path d="M40 77 Q52 72 64 77 T88 77 L97 95 Q99 100 94 101 H34 Q29 100 31 95 Z"
+        fill="url(#liquid)"/>
+  <path d="M40 77 Q52 72 64 77 T88 77" fill="none" stroke="#ffffff"
+        stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M53 27 H75 V53 L98 94 Q101 101 94 103 H34 Q27 101 30 94 L53 53 Z"
+        fill="none" stroke="#2f6b4c" stroke-width="1.5" stroke-linejoin="round" opacity="0.35"/>
+  <rect x="49" y="22" width="30" height="7" rx="3.5" fill="#eafff2"/>
+
+  <!-- A few small bubbles keep the mark legible at launcher size. -->
+  <circle cx="56" cy="89" r="3" fill="#eafff2" opacity="0.8"/>
+  <circle cx="72" cy="85" r="2" fill="#eafff2" opacity="0.65"/>
+  <circle cx="77" cy="94" r="3" fill="#eafff2" opacity="0.65"/>
+</svg>
