@@ -47,9 +47,9 @@ There is no default, because the build installs with `-y`, which imports a remot
 without asking: only point it at a URL whose key you trust. `WORK` and `OUT` override the script's scratch and
 output folders.
 
-Vanilla runit profiles currently support console images only because the desktop presets can
-include workspace packages. Vanilla dinit profiles retain `base-system-dinit` and `dinit-void`
-from the Voidlab repository, without optional applications. A custom root password is written to
+Vanilla profiles currently support console images only because desktop presets add optional
+packages. Vanilla dinit profiles retain `base-system-dinit` and `dinit-void`
+from the Voidlab repository. A custom root password is written to
 `profile.toml` and `build.sh`; Vessel saves these files with owner-only permissions.
 
 `[live].loglevel = 3` hides ordinary kernel errors from the boot console while

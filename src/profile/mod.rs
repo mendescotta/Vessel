@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-pub use enums::{Bootloader, Desktop, DisplayManager, Init, RepoPreset, Userland};
+pub use enums::{Arch, Bootloader, Desktop, DisplayManager, Init, RepoPreset, Userland};
 
 pub const PROFILE_VERSION: u32 = 1;
 
@@ -16,7 +16,7 @@ pub struct Profile {
     pub version: u32,
     pub name: String,
     #[serde(default = "default_arch")]
-    pub arch: String,
+    pub arch: Arch,
     pub init: Init,
     pub userland: Userland,
     #[serde(default)]
@@ -112,8 +112,8 @@ impl Default for Live {
     }
 }
 
-fn default_arch() -> String {
-    "x86_64".into()
+fn default_arch() -> Arch {
+    Arch::X86_64
 }
 
 fn default_dm() -> DisplayManager {
@@ -204,17 +204,12 @@ impl Profile {
     }
 
     pub fn save(&self, path: &Path) -> std::io::Result<()> {
-        use std::os::unix::fs::PermissionsExt;
-
-        let tmp = path.with_extension("toml.tmp");
-        std::fs::write(&tmp, self.to_toml())?;
         let mode = if self.live.root_password.is_some() {
             0o600
         } else {
             0o644
         };
-        std::fs::set_permissions(&tmp, std::fs::Permissions::from_mode(mode))?;
-        std::fs::rename(tmp, path)
+        crate::atomic_write::write_mode(path, &self.to_toml(), mode)
     }
 }
 

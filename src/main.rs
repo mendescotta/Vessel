@@ -1,3 +1,4 @@
+mod atomic_write;
 mod backend;
 mod cli;
 mod generate;

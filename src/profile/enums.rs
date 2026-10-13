@@ -50,6 +50,11 @@ axis!(Userland {
     Gnu => "gnu", "GNU coreutils";
 });
 
+axis!(Arch {
+    X86_64 => "x86_64", "glibc";
+    X86_64Musl => "x86_64-musl", "musl";
+});
+
 axis!(Bootloader {
     Grub => "grub", "GRUB";
     Limine => "limine", "Limine";

@@ -1,6 +1,7 @@
 use adw::prelude::*;
 
-use super::{issues_group, page, stack, text_row};
+use super::{enum_row, issues_group, page, stack, text_row};
+use crate::profile::{Arch, RepoPreset};
 use crate::ui::state::{self, Change, Shared};
 
 pub fn build(s: &Shared) -> gtk::Widget {
@@ -24,42 +25,20 @@ pub fn build(s: &Shared) -> gtk::Widget {
         |p| p.kernel.clone(),
         |p, v| p.kernel = v,
     ));
-    let arch = adw::ComboRow::builder()
-        .title("C library")
-        .subtitle("glibc supports multilib; musl does not")
-        .model(&gtk::StringList::new(&["glibc", "musl"]))
-        .selected(if s.borrow().profile.arch == "x86_64-musl" {
-            1
-        } else {
-            0
-        })
-        .build();
-    {
-        let s = s.clone();
-        arch.connect_selected_notify(move |row| {
-            state::update(&s, |p| {
-                p.arch = if row.selected() == 1 {
-                    "x86_64-musl"
-                } else {
-                    "x86_64"
-                }
-                .into();
-                if row.selected() == 1 {
-                    p.repos
-                        .presets
-                        .retain(|r| *r != crate::profile::RepoPreset::Multilib);
-                }
-            });
-        });
-    }
-    {
-        let arch = arch.clone();
-        state::on_change(s, move |p, _, change| {
-            if change == Change::Replace {
-                arch.set_selected(if p.arch == "x86_64-musl" { 1 } else { 0 });
+    let arch = enum_row(
+        s,
+        "C library",
+        Arch::ALL,
+        Arch::label,
+        |p| p.arch,
+        |p, arch| {
+            p.arch = arch;
+            if arch == Arch::X86_64Musl {
+                p.repos.presets.retain(|r| *r != RepoPreset::Multilib);
             }
-        });
-    }
+        },
+    );
+    arch.set_subtitle("glibc supports multilib; musl does not");
     base.add(&arch);
     page.add(&base);
 
@@ -103,7 +82,10 @@ pub fn build(s: &Shared) -> gtk::Widget {
         let password = password.clone();
         state::on_change(s, move |p, _, change| {
             if change == Change::Replace {
-                password.set_text(p.live.root_password.as_deref().unwrap_or(""));
+                let value = p.live.root_password.as_deref().unwrap_or("");
+                if password.text() != value {
+                    password.set_text(value);
+                }
             }
         });
     }

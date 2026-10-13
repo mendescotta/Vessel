@@ -3,6 +3,7 @@ use std::io;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
+use crate::atomic_write::write_mode;
 use crate::generate::assets::assets_for;
 use crate::generate::script::{HOOK_PATH, OVERLAY_DIR};
 use crate::generate::{generate_with, repos};
@@ -81,17 +82,6 @@ pub fn save_output_with(v: &ValidProfile, dir: &Path, voidlab_repo: &str) -> io:
         if secret { 0o700 } else { 0o755 },
     )?;
     Ok(script)
-}
-
-fn write_mode(path: &Path, contents: &str, mode: u32) -> io::Result<()> {
-    let name = path
-        .file_name()
-        .expect("output paths have a file name")
-        .to_string_lossy();
-    let tmp = path.with_file_name(format!(".{name}.tmp"));
-    fs::write(&tmp, contents)?;
-    fs::set_permissions(&tmp, fs::Permissions::from_mode(mode))?;
-    fs::rename(&tmp, path)
 }
 
 fn same_path(a: &Path, b: &Path) -> bool {

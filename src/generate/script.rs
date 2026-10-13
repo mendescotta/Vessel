@@ -172,7 +172,7 @@ fn header(s: &mut String, p: &Profile, active: &[(Bootloader, bool, bool)], labe
         "while [ \"$WORK\" != / ] && [ \"${WORK%/}\" != \"$WORK\" ]; do WORK=\"${WORK%/}\"; done\n",
     ));
     s.push_str("ROOTFS=\"$WORK/rootfs\"\nISODIR=\"$WORK/iso\"\nOUT=\"${OUT:-$HERE/out}\"\n");
-    let _ = writeln!(s, "ARCH={}", sh_quote(&p.arch));
+    let _ = writeln!(s, "ARCH={}", sh_quote(p.arch.id()));
     let _ = writeln!(s, "ISO_NAME={}", sh_quote(&p.name));
     let _ = writeln!(s, "LABEL={}", sh_quote(label));
     let _ = writeln!(s, "MENU_TITLE={}", sh_quote(&menu_title(&p.name)));
