@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # vessel
 
 GTK4/Rust ISO profile builder: a validated `profile.toml` generates a

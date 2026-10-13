@@ -17,6 +17,7 @@ name = "dinit-base"
 arch = "x86_64"                  # x86_64 | x86_64-musl (musl: no multilib)
 init = "dinit"                  # runit | dinit
 userland = "gnu"
+vanilla = false                 # runit: official Void console; dinit: keeps required boot packages
 bootloaders = ["grub"]          # grub | limine | refind (refind: UEFI only)
 desktops = []                   # gnome cosmic cinnamon xfce budgie kde; empty = console
 display_manager = "none"        # none lightdm sddm gdm cosmic-greeter
@@ -35,6 +36,8 @@ disable = []
 
 [live]
 loglevel = 4                    # kernel console level, 0–8; default 4
+user = "anon"                   # live session user
+# root_password = "..."        # optional; stored in the profile and build script
 ```
 
 Optional `overlay_dir` (copied over the rootfs) and `post_rootfs_hook` (run in the rootfs chroot) are
@@ -43,6 +46,11 @@ relative to the profile. Examples are in `examples/`. The `voidlab` preset needs
 There is no default, because the build installs with `-y`, which imports a remote repository's signing key
 without asking: only point it at a URL whose key you trust. `WORK` and `OUT` override the script's scratch and
 output folders.
+
+Vanilla profiles currently support console images only because desktop presets add optional
+packages. Vanilla dinit profiles retain `base-system-dinit` and `dinit-void`
+from the Voidlab repository. A custom root password is written to
+`profile.toml` and `build.sh`; Vessel saves these files with owner-only permissions.
 
 `[live].loglevel = 3` hides ordinary kernel errors from the boot console while
 keeping them in the kernel log for `dmesg`. It changes console output only.

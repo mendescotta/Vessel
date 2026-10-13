@@ -1,5 +1,7 @@
 use super::*;
-use crate::profile::{Bootloader as B, Desktop, DisplayManager as Dm, Init, Profile, RepoPreset};
+use crate::profile::{
+    Arch, Bootloader as B, Desktop, DisplayManager as Dm, Init, Profile, RepoPreset,
+};
 
 fn errors(p: &Profile) -> Vec<Issue> {
     validate(p)
@@ -164,13 +166,6 @@ fn missing_overlay_and_hook_error() {
 }
 
 #[test]
-fn non_x86_64_arch_error() {
-    let mut p = Profile::new_default();
-    p.arch = "aarch64".into();
-    assert!(has_error(&p, "arch"));
-}
-
-#[test]
 fn list_entries_must_be_single_tokens() {
     let mut p = Profile::new_default();
     p.packages.extra = vec!["fire fox".into()];
@@ -224,8 +219,39 @@ fn examples_validate() {
 #[test]
 fn musl_arch_is_accepted_but_not_with_multilib() {
     let mut p = Profile::new_default();
-    p.arch = "x86_64-musl".into();
+    p.arch = Arch::X86_64Musl;
     assert!(!has_error(&p, "arch"));
     p.repos.presets.push(RepoPreset::Multilib);
     assert!(has_error(&p, "repos"));
+}
+
+#[test]
+fn vanilla_restricts_sources_and_package_overrides() {
+    let mut p = Profile::new_default();
+    p.vanilla = true;
+    assert!(validate(&p).1.is_some());
+    p.repos.presets.push(RepoPreset::Nonfree);
+    assert!(has_error(&p, "repos"));
+    p.repos.presets.clear();
+    p.packages.extra.push("caerus".into());
+    assert!(has_error(&p, "packages"));
+    p.packages.extra.clear();
+    p.desktops.push(Desktop::Xfce);
+    assert!(has_error(&p, "desktops"));
+    p.desktops.clear();
+    p.init = Init::Dinit;
+    p.repos.presets.push(RepoPreset::Voidlab);
+    assert!(validate(&p).1.is_some());
+    p.desktops.push(Desktop::Gnome);
+    assert!(has_error(&p, "desktops"));
+    assert!(validate(&p).1.is_none());
+}
+
+#[test]
+fn root_password_rejects_control_line_breaks() {
+    let mut p = Profile::new_default();
+    p.live.root_password = Some("sensible value".into());
+    assert!(validate(&p).1.is_some());
+    p.live.root_password = Some("first\nsecond".into());
+    assert!(has_error(&p, "live"));
 }

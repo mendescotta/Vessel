@@ -62,6 +62,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
             pages::BOOT => pages::boot::build(&s),
             pages::DESKTOP => pages::desktop::build(&s),
             pages::REPOS => pages::repos::build(&s),
+            pages::PACKAGES => pages::packages::build(&s),
             pages::REVIEW => pages::review::build(&s),
             _ => pages::output::build(&s),
         };

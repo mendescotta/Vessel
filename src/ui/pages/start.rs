@@ -9,7 +9,7 @@ use crate::ui::state::{self, Shared};
 
 pub fn build(s: &Shared, nav: Navigate) -> gtk::Widget {
     let status = adw::StatusPage::builder()
-        .icon_name("media-optical-symbolic")
+        .icon_name("org.voidlinux.vessel")
         .title("vessel")
         .description("Compose a Void Linux live ISO: pick an init, userland, bootloaders, desktops and repositories, then generate a standalone build script.")
         .build();

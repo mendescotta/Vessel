@@ -190,7 +190,7 @@ fn live_console_loglevel_is_configurable_and_validated() {
 #[test]
 fn musl_profile_uses_the_musl_repositories() {
     let mut p = Profile::new_default();
-    p.arch = "x86_64-musl".into();
+    p.arch = crate::profile::Arch::X86_64Musl;
     p.repos.presets = vec![RepoPreset::Nonfree];
     let list = repos::repo_list_with(&p, "");
     assert_eq!(

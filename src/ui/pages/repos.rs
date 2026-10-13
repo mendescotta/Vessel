@@ -1,25 +1,16 @@
 use adw::prelude::*;
 
-use super::{issues_group, list_group, page, path_row, switch_row, toggle_in};
+use super::{issues_group, list_group, page, switch_row, toggle_in};
 use crate::profile::validate::required_presets;
 use crate::profile::RepoPreset;
 use crate::ui::state::{self, Shared};
 
 pub fn build(s: &Shared) -> gtk::Widget {
     let page = page(
-        "Repositories & packages",
-        "Where packages come from, what goes on the ISO beyond the chosen components, and files to layer on top.",
+        "Repositories",
+        "Choose package sources. The official Void repository is always included.",
     );
-    page.add(&issues_group(
-        s,
-        &[
-            "repos",
-            "packages",
-            "services",
-            "overlay_dir",
-            "post_rootfs_hook",
-        ],
-    ));
+    page.add(&issues_group(s, &["repos"]));
 
     let presets = adw::PreferencesGroup::builder()
         .title("Repositories")
@@ -77,57 +68,5 @@ pub fn build(s: &Shared) -> gtk::Widget {
         |p| &mut p.repos.custom,
         false,
     ));
-    page.add(&list_group(
-        s,
-        "Extra packages",
-        "Installed on top of what the chosen components pull in.",
-        |p| &p.packages.extra,
-        |p| &mut p.packages.extra,
-        true,
-    ));
-    page.add(&list_group(
-        s,
-        "Excluded packages",
-        "Never installed, even as dependencies (xbps ignorepkg).",
-        |p| &p.packages.exclude,
-        |p| &mut p.packages.exclude,
-        false,
-    ));
-    page.add(&list_group(
-        s,
-        "Enable services",
-        "In addition to the ones the chosen components enable.",
-        |p| &p.services.enable,
-        |p| &mut p.services.enable,
-        false,
-    ));
-    page.add(&list_group(
-        s,
-        "Disable services",
-        "Removed even if a component enables them.",
-        |p| &p.services.disable,
-        |p| &mut p.services.disable,
-        false,
-    ));
-
-    let files = adw::PreferencesGroup::builder()
-        .title("Customisation")
-        .build();
-    files.add(&path_row(
-        s,
-        "Overlay folder",
-        true,
-        |p| p.overlay_dir.clone(),
-        |p, v| p.overlay_dir = v,
-    ));
-    files.add(&path_row(
-        s,
-        "Post-rootfs hook script",
-        false,
-        |p| p.post_rootfs_hook.clone(),
-        |p, v| p.post_rootfs_hook = v,
-    ));
-    page.add(&files);
-
     page.upcast()
 }

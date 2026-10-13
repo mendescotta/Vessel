@@ -409,3 +409,15 @@ fn iso_and_checksum_are_handed_back_to_the_sudo_user() {
         "both the ISO and its checksum are chowned"
     );
 }
+
+#[test]
+fn custom_root_password_is_set_before_packing_and_not_on_kernel_command_line() {
+    let mut p = Profile::new_default();
+    p.live.root_password = Some("secret ' with spaces".into());
+    let script = gen(p);
+    assert!(script.contains("LIVE_ROOT_PASSWORD='secret '\\'' with spaces'"));
+    assert!(script.contains("chroot \"$ROOTFS\" chpasswd -c SHA512"));
+    assert!(script.contains("vessel-root-password-set"));
+    assert!(!script.contains("live.root_password="));
+    assert!(script.find("chpasswd -c SHA512").unwrap() < script.find("mkfs.ext3 -q").unwrap());
+}

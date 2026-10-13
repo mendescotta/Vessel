@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use super::{Bootloader, Desktop, DisplayManager, Init, Profile, RepoPreset};
+use super::{Arch, Bootloader, Desktop, DisplayManager, Init, Profile, RepoPreset};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Severity {
@@ -72,16 +72,7 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
     if p.name.trim().is_empty() {
         error("name", "give the profile a name".into());
     }
-    if p.arch != "x86_64" && p.arch != "x86_64-musl" {
-        error(
-            "arch",
-            format!(
-                "architecture {:?} is not supported yet (x86_64 or x86_64-musl)",
-                p.arch
-            ),
-        );
-    }
-    if p.arch.ends_with("-musl") && p.repos.presets.contains(&RepoPreset::Multilib) {
+    if p.arch == Arch::X86_64Musl && p.repos.presets.contains(&RepoPreset::Multilib) {
         error(
             "repos",
             "the multilib repository does not exist for musl".into(),
@@ -126,6 +117,29 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
             error(
                 "repos",
                 format!("{} needs the {} repository", p.init.label(), preset.id()),
+            );
+        }
+    }
+    if p.vanilla {
+        if !p.desktops.is_empty() {
+            error("desktops", "a vanilla ISO currently supports a console image only; desktop presets include optional packages".into());
+        }
+        if p.repos
+            .presets
+            .iter()
+            .any(|r| !required_presets(p).contains(r))
+            || !p.repos.custom.is_empty()
+        {
+            error(
+                "repos",
+                "vanilla builds use only official Void repositories and those required by the init"
+                    .into(),
+            );
+        }
+        if !p.packages.extra.is_empty() || !p.packages.exclude.is_empty() {
+            error(
+                "packages",
+                "vanilla builds cannot add or exclude packages".into(),
             );
         }
     }
@@ -198,6 +212,14 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
             "live",
             format!("user name {:?} must match [a-z_][a-z0-9_-]*", p.live.user),
         );
+    }
+    if let Some(password) = &p.live.root_password {
+        if password.is_empty() || password.contains(['\n', '\r', '\0']) {
+            error(
+                "live",
+                "root password must be nonempty and contain no newline or NUL".into(),
+            );
+        }
     }
     for (what, v) in [
         ("locale", &p.live.locale),

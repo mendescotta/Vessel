@@ -13,7 +13,7 @@ fn minimal_profile_gets_defaults() {
     assert_eq!(p.display_manager, DisplayManager::None);
     assert_eq!(p.live.user, "anon");
     assert_eq!(p.live.hostname, "void-live");
-    assert_eq!(p.arch, "x86_64");
+    assert_eq!(p.arch, Arch::X86_64);
     assert_eq!(p.kernel, "linux");
     assert!(p.desktops.is_empty());
 }
@@ -53,6 +53,36 @@ fn unknown_enum_value_is_parse_error_naming_field() {
         ProfileError::Parse(m) => assert!(m.contains("init"), "{m}"),
         other => panic!("{other:?}"),
     }
+}
+
+#[test]
+fn unknown_arch_is_parse_error_naming_field() {
+    let e = Profile::from_toml(&format!("{MINIMAL}arch = \"aarch64\"\n")).unwrap_err();
+    match e {
+        ProfileError::Parse(m) => assert!(m.contains("arch"), "{m}"),
+        other => panic!("{other:?}"),
+    }
+}
+
+#[test]
+fn saving_password_profile_sets_owner_only_mode() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = std::env::temp_dir().join(format!("vessel-profile-secret-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("profile.toml");
+    let mut p = Profile::new_default();
+    p.live.root_password = Some("sample secret".into());
+    p.save(&path).unwrap();
+    assert_eq!(
+        std::fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+        0o600
+    );
+    assert_eq!(
+        Profile::load(&path).unwrap().live.root_password,
+        p.live.root_password
+    );
+    std::fs::remove_dir_all(&dir).unwrap();
 }
 
 #[test]

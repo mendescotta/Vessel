@@ -56,8 +56,8 @@ pub fn preset_urls(
 pub fn repo_list_with(p: &Profile, voidlab: &str) -> Vec<String> {
     let mut out = p.repos.custom.clone();
     for preset in &p.repos.presets {
-        out.extend(preset_urls(*preset, &p.repos.presets, voidlab, &p.arch));
+        out.extend(preset_urls(*preset, &p.repos.presets, voidlab, p.arch.id()));
     }
-    out.push(official(&p.arch));
+    out.push(official(p.arch.id()));
     super::dedup(out)
 }
