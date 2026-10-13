@@ -35,7 +35,11 @@ chroot ${NEWROOT} cp -a /etc/skel/. /home/$USERNAME/
 chroot ${NEWROOT} chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # Setup default root/user password (voidlinux).
-chroot ${NEWROOT} sh -c 'echo "root:voidlinux" | chpasswd -c SHA512'
+if [ -e "${NEWROOT}/etc/vessel-root-password-set" ]; then
+    rm -f "${NEWROOT}/etc/vessel-root-password-set"
+else
+    chroot ${NEWROOT} sh -c 'echo "root:voidlinux" | chpasswd -c SHA512'
+fi
 chroot ${NEWROOT} sh -c "echo "$USERNAME:voidlinux" | chpasswd -c SHA512"
 
 # Enable sudo permission by default.

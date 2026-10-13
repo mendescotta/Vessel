@@ -1,6 +1,7 @@
 pub mod boot;
 pub mod desktop;
 pub mod output;
+pub mod packages;
 pub mod repos;
 pub mod review;
 pub mod stack;
@@ -23,6 +24,7 @@ pub const SYSTEM: &str = "system";
 pub const BOOT: &str = "boot";
 pub const DESKTOP: &str = "desktop";
 pub const REPOS: &str = "repos";
+pub const PACKAGES: &str = "packages";
 pub const REVIEW: &str = "review";
 pub const OUTPUT: &str = "output";
 
@@ -31,7 +33,8 @@ pub const ORDER: &[(&str, &str)] = &[
     (SYSTEM, "System"),
     (BOOT, "Boot"),
     (DESKTOP, "Desktop"),
-    (REPOS, "Repos & packages"),
+    (REPOS, "Repositories"),
+    (PACKAGES, "Packages"),
     (REVIEW, "Review"),
     (OUTPUT, "Output & build"),
 ];

@@ -177,6 +177,9 @@ fn header(s: &mut String, p: &Profile, active: &[(Bootloader, bool, bool)], labe
     let _ = writeln!(s, "LABEL={}", sh_quote(label));
     let _ = writeln!(s, "MENU_TITLE={}", sh_quote(&menu_title(&p.name)));
     let _ = writeln!(s, "LIVE_USER={}", sh_quote(&p.live.user));
+    if let Some(password) = &p.live.root_password {
+        let _ = writeln!(s, "LIVE_ROOT_PASSWORD={}", sh_quote(password));
+    }
     let _ = writeln!(s, "LIVE_HOSTNAME={}", sh_quote(&p.live.hostname));
     let _ = writeln!(s, "LIVE_LOCALE={}", sh_quote(&p.live.locale));
     let _ = writeln!(s, "LIVE_KEYMAP={}", sh_quote(&p.live.keymap));
@@ -326,6 +329,13 @@ fi
 "#,
     );
     s.push_str(init::service_functions(p.init));
+    if p.live.root_password.is_some() {
+        s.push_str(
+            "printf 'root:%s\\n' \"$LIVE_ROOT_PASSWORD\" | chroot \"$ROOTFS\" chpasswd -c SHA512\n",
+        );
+        s.push_str("touch \"$ROOTFS/etc/vessel-root-password-set\"\n");
+        s.push_str("unset LIVE_ROOT_PASSWORD\n");
+    }
     for svc in enabled_services(p) {
         let _ = writeln!(s, "enable_service {}", sh_quote(&svc));
     }

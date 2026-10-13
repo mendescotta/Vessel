@@ -34,6 +34,8 @@ pub fn build(s: &Shared) -> gtk::Widget {
         let s = s.clone();
         move || {
             let text = match &s.borrow().valid {
+                Some(v) if v.get().live.root_password.is_some() =>
+                    "Script preview hidden because the profile contains a root password. Save output to inspect build.sh (owner-only permissions).".to_string(),
                 Some(v) => generate(v),
                 None => "Fix the errors above to see the generated script.".to_string(),
             };

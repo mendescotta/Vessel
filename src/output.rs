@@ -68,9 +68,18 @@ pub fn save_output_with(v: &ValidProfile, dir: &Path, voidlab_repo: &str) -> io:
         .as_ref()
         .map(|_| PathBuf::from(HOOK_PATH));
 
-    write_mode(&dir.join("profile.toml"), &saved.to_toml(), 0o644)?;
+    let secret = p.live.root_password.is_some();
+    write_mode(
+        &dir.join("profile.toml"),
+        &saved.to_toml(),
+        if secret { 0o600 } else { 0o644 },
+    )?;
     let script = dir.join("build.sh");
-    write_mode(&script, &generate_with(v, voidlab_repo), 0o755)?;
+    write_mode(
+        &script,
+        &generate_with(v, voidlab_repo),
+        if secret { 0o700 } else { 0o755 },
+    )?;
     Ok(script)
 }
 

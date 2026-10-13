@@ -139,3 +139,14 @@ fn overlay_containing_the_output_folder_is_refused() {
     assert_eq!(err.kind(), std::io::ErrorKind::InvalidInput, "{err}");
     assert!(!dir.join("overlay").exists());
 }
+
+#[test]
+fn password_output_is_owner_only() {
+    let dir = tmp("password");
+    let mut p = Profile::new_default();
+    p.live.root_password = Some("sample secret".into());
+    let script = save_output_with(&valid(&p), &dir, "/vl").unwrap();
+    assert_eq!(mode(&script), 0o700);
+    assert_eq!(mode(&dir.join("profile.toml")), 0o600);
+    std::fs::remove_dir_all(&dir).ok();
+}

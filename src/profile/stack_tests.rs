@@ -2,11 +2,6 @@ use super::*;
 use crate::profile::RepoPreset;
 
 #[test]
-fn runit_gnu_is_standard() {
-    assert_eq!(support(Init::Runit, Userland::Gnu), Support::Standard);
-}
-
-#[test]
 fn select_sets_stack_and_adds_repos() {
     let mut p = Profile::new_default();
     select(&mut p, Init::Dinit, Userland::Gnu);

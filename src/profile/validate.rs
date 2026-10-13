@@ -129,6 +129,29 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
             );
         }
     }
+    if p.vanilla {
+        if p.init == Init::Runit && !p.desktops.is_empty() {
+            error("desktops", "a vanilla runit ISO currently supports a console image only; desktop presets include custom packages".into());
+        }
+        if p.repos
+            .presets
+            .iter()
+            .any(|r| !required_presets(p).contains(r))
+            || !p.repos.custom.is_empty()
+        {
+            error(
+                "repos",
+                "vanilla builds use only official Void repositories and those required by the init"
+                    .into(),
+            );
+        }
+        if !p.packages.extra.is_empty() || !p.packages.exclude.is_empty() {
+            error(
+                "packages",
+                "vanilla builds cannot add or exclude packages".into(),
+            );
+        }
+    }
     for url in &p.repos.custom {
         if !is_token(url) {
             error(
@@ -198,6 +221,14 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
             "live",
             format!("user name {:?} must match [a-z_][a-z0-9_-]*", p.live.user),
         );
+    }
+    if let Some(password) = &p.live.root_password {
+        if password.is_empty() || password.contains(['\n', '\r', '\0']) {
+            error(
+                "live",
+                "root password must be nonempty and contain no newline or NUL".into(),
+            );
+        }
     }
     for (what, v) in [
         ("locale", &p.live.locale),

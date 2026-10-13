@@ -19,6 +19,8 @@ pub struct Profile {
     pub arch: String,
     pub init: Init,
     pub userland: Userland,
+    #[serde(default)]
+    pub vanilla: bool,
     pub bootloaders: Vec<Bootloader>,
     #[serde(default)]
     pub uefi_only: bool,
@@ -92,6 +94,8 @@ pub struct Live {
     pub keymap: String,
     pub timezone: String,
     pub user: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub root_password: Option<String>,
 }
 
 impl Default for Live {
@@ -103,6 +107,7 @@ impl Default for Live {
             keymap: "us".into(),
             timezone: "UTC".into(),
             user: "anon".into(),
+            root_password: None,
         }
     }
 }
@@ -149,6 +154,7 @@ impl Profile {
             arch: default_arch(),
             init: Init::Runit,
             userland: Userland::Gnu,
+            vanilla: false,
             bootloaders: vec![Bootloader::Grub],
             uefi_only: false,
             desktops: Vec::new(),
@@ -198,7 +204,17 @@ impl Profile {
     }
 
     pub fn save(&self, path: &Path) -> std::io::Result<()> {
-        std::fs::write(path, self.to_toml())
+        use std::os::unix::fs::PermissionsExt;
+
+        let tmp = path.with_extension("toml.tmp");
+        std::fs::write(&tmp, self.to_toml())?;
+        let mode = if self.live.root_password.is_some() {
+            0o600
+        } else {
+            0o644
+        };
+        std::fs::set_permissions(&tmp, std::fs::Permissions::from_mode(mode))?;
+        std::fs::rename(tmp, path)
     }
 }
 

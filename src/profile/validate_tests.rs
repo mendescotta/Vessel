@@ -229,3 +229,31 @@ fn musl_arch_is_accepted_but_not_with_multilib() {
     p.repos.presets.push(RepoPreset::Multilib);
     assert!(has_error(&p, "repos"));
 }
+
+#[test]
+fn vanilla_restricts_sources_and_package_overrides() {
+    let mut p = Profile::new_default();
+    p.vanilla = true;
+    assert!(validate(&p).1.is_some());
+    p.repos.presets.push(RepoPreset::Nonfree);
+    assert!(has_error(&p, "repos"));
+    p.repos.presets.clear();
+    p.packages.extra.push("caerus".into());
+    assert!(has_error(&p, "packages"));
+    p.packages.extra.clear();
+    p.desktops.push(Desktop::Xfce);
+    assert!(has_error(&p, "desktops"));
+    p.desktops.clear();
+    p.init = Init::Dinit;
+    p.repos.presets.push(RepoPreset::Voidlab);
+    assert!(validate(&p).1.is_some());
+}
+
+#[test]
+fn root_password_rejects_control_line_breaks() {
+    let mut p = Profile::new_default();
+    p.live.root_password = Some("sensible value".into());
+    assert!(validate(&p).1.is_some());
+    p.live.root_password = Some("first\nsecond".into());
+    assert!(has_error(&p, "live"));
+}

@@ -1,31 +1,12 @@
 use super::validate::required_presets;
 use super::{Init, Profile, Userland};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Support {
-    Standard,
-    Supported,
-}
-
-impl Support {
-    pub fn label(self) -> &'static str {
-        match self {
-            Self::Standard => "Standard",
-            Self::Supported => "Supported",
-        }
-    }
-}
-
-pub fn support(init: Init, userland: Userland) -> Support {
-    match (init, userland) {
-        (Init::Runit, Userland::Gnu) => Support::Standard,
-        (Init::Dinit, _) => Support::Supported,
-    }
-}
-
 pub fn select(p: &mut Profile, init: Init, userland: Userland) {
     p.init = init;
     p.userland = userland;
+    if p.vanilla {
+        p.repos.presets.clear();
+    }
     for r in required_presets(p) {
         if !p.repos.presets.contains(&r) {
             p.repos.presets.push(r);
