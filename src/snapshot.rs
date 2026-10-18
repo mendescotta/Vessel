@@ -114,11 +114,14 @@ pub fn snapshot_with(host: &dyn HostProbe, voidlab_repo: &str) -> (Profile, Vec<
         }
     }
 
-    p.bootloaders = vec![if host.exists("/boot/grub") {
-        Bootloader::Grub
+    let has_refind = has("refind")
+        || host.exists("/boot/refind_linux.conf")
+        || host.exists("/boot/efi/EFI/refind/refind_x64.efi");
+    p.bootloaders = if has_refind {
+        vec![Bootloader::Refind, Bootloader::Grub]
     } else {
-        Bootloader::Limine
-    }];
+        vec![Bootloader::Grub]
+    };
 
     read_repos(host, voidlab_repo, &mut p, &mut warnings);
     for preset in required_presets(&p) {

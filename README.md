@@ -18,7 +18,7 @@ arch = "x86_64"                  # x86_64 | x86_64-musl (musl: no multilib)
 init = "dinit"                  # runit | dinit
 userland = "gnu"
 vanilla = false                 # runit: official Void console; dinit: keeps required boot packages
-bootloaders = ["grub"]          # grub | limine | refind (refind: UEFI only)
+bootloaders = ["grub"]          # grub | limine | refind (refind: UEFI only); the GTK editor offers GRUB and rEFInd
 desktops = []                   # gnome cosmic cinnamon xfce budgie kde; empty = console
 display_manager = "none"        # none lightdm sddm gdm cosmic-greeter
 

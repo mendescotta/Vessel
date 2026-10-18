@@ -8,14 +8,14 @@ use crate::ui::state::{self, Shared};
 pub fn build(s: &Shared) -> gtk::Widget {
     let page = page(
         "Boot",
-        "Pick one or more bootloaders, or none if you add your own. The first one in the list that supports a firmware path boots it, so rEFInd (UEFI only) needs GRUB or Limine for BIOS machines.",
+        "Pick one or more bootloaders, or none if you add your own. The first one in the list that supports a firmware path boots it, so rEFInd (UEFI only) needs GRUB for BIOS machines.",
     );
     page.add(&issues_group(s, &["bootloaders"]));
 
     let loaders = adw::PreferencesGroup::builder()
         .title("Bootloaders")
         .build();
-    for b in Bootloader::ALL.iter().copied() {
+    for b in Bootloader::GUI.iter().copied() {
         let roles = match (b.bios(), b.uefi()) {
             (true, true) => "BIOS and UEFI",
             _ => "UEFI only",

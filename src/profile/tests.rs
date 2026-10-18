@@ -122,3 +122,9 @@ fn bootloader_firmware_roles() {
     assert!(Bootloader::Limine.bios() && Bootloader::Limine.uefi());
     assert!(!Bootloader::Refind.bios() && Bootloader::Refind.uefi());
 }
+
+#[test]
+fn gui_bootloaders_omit_limine() {
+    assert_eq!(Bootloader::GUI, &[Bootloader::Grub, Bootloader::Refind]);
+    assert!(!Bootloader::GUI.contains(&Bootloader::Limine));
+}

@@ -85,6 +85,13 @@ axis!(RepoPreset {
 });
 
 impl Bootloader {
+    /// Bootloaders currently offered by the GTK editor.
+    ///
+    /// Limine remains part of the profile and generator model so existing
+    /// profiles and the command-line interface continue to work while its
+    /// installer path receives more testing.
+    pub const GUI: &'static [Self] = &[Self::Grub, Self::Refind];
+
     pub fn bios(self) -> bool {
         match self {
             Self::Grub | Self::Limine => true,
