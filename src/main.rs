@@ -4,6 +4,7 @@ mod cli;
 mod generate;
 mod output;
 mod profile;
+mod renderer;
 mod snapshot;
 mod ui;
 
@@ -27,6 +28,7 @@ fn load_app_icon() {
 }
 
 fn main() -> glib::ExitCode {
+    renderer::configure_at_startup();
     let args: Vec<String> = std::env::args().skip(1).collect();
     if let Some(code) = cli::run(&args) {
         return glib::ExitCode::from(code);
