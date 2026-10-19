@@ -27,6 +27,8 @@ presets = ["voidlab"]           # voidlab nonfree multilib
 custom = []
 
 [packages]
+base = []                       # replaces the init's base metapackage; empty = default
+desktop = []                    # replaces the desktop presets' metapackages; empty = default
 extra = []
 exclude = []
 
@@ -42,10 +44,14 @@ user = "anon"                   # live session user
 
 Optional `overlay_dir` (copied over the rootfs) and `post_rootfs_hook` (run in the rootfs chroot) are
 relative to the profile. Examples are in `examples/`. The `voidlab` preset needs `VESSEL_VOIDLAB_REPO`: the
-`repo/` directory of a local [voidlab](https://github.com/mendescotta/voidlab) checkout, or a repository URL.
+`repo/` directory of a local [voidlab-testing](https://github.com/mendescotta/voidlab-testing) checkout, or a repository URL.
 There is no default, because the build installs with `-y`, which imports a remote repository's signing key
 without asking: only point it at a URL whose key you trust. `WORK` and `OUT` override the script's scratch and
 output folders.
+
+`[packages].base` and `[packages].desktop` build a lean image from explicit package lists instead
+of the `base-system`/desktop metapackages. A Dinit `base` list must include `dinit-void`, and `desktop`
+needs at least one entry in `desktops`. Vanilla profiles cannot use either.
 
 Vanilla profiles currently support console images only because desktop presets add optional
 packages. Vanilla dinit profiles retain `base-system-dinit` and `dinit-void`
