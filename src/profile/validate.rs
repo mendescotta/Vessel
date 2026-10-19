@@ -120,6 +120,21 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
             );
         }
     }
+    if !p.packages.base.is_empty()
+        && p.init == Init::Dinit
+        && !p.packages.base.iter().any(|pkg| pkg == "dinit-void")
+    {
+        error(
+            "packages",
+            "explicit Dinit base packages must include dinit-void for boot services".into(),
+        );
+    }
+    if !p.packages.desktop.is_empty() && p.desktops.is_empty() {
+        error(
+            "packages",
+            "explicit desktop packages need a selected desktop preset".into(),
+        );
+    }
     if p.vanilla {
         if !p.desktops.is_empty() {
             error("desktops", "a vanilla ISO currently supports a console image only; desktop presets include optional packages".into());
@@ -136,7 +151,11 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
                     .into(),
             );
         }
-        if !p.packages.extra.is_empty() || !p.packages.exclude.is_empty() {
+        if !p.packages.base.is_empty()
+            || !p.packages.desktop.is_empty()
+            || !p.packages.extra.is_empty()
+            || !p.packages.exclude.is_empty()
+        {
             error(
                 "packages",
                 "vanilla builds cannot add or exclude packages".into(),
@@ -172,6 +191,8 @@ pub fn validate(p: &Profile) -> (Vec<Issue>, Option<ValidProfile>) {
     }
 
     for (field, list) in [
+        ("packages", &p.packages.base),
+        ("packages", &p.packages.desktop),
         ("packages", &p.packages.extra),
         ("packages", &p.packages.exclude),
         ("services", &p.services.enable),

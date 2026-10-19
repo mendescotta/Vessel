@@ -45,7 +45,15 @@ pub fn group(s: &Shared) -> adw::PreferencesGroup {
         .build();
     group.add(&summary);
     let refresh = move |p: &Profile| {
-        summary.set_subtitle(&crate::generate::init::base_packages(p.init).join(", "));
+        let packages = if p.packages.base.is_empty() {
+            crate::generate::init::base_packages(p.init)
+                .iter()
+                .map(|package| package.to_string())
+                .collect::<Vec<_>>()
+        } else {
+            p.packages.base.clone()
+        };
+        summary.set_subtitle(&packages.join(", "));
     };
     refresh(&s.borrow().profile);
     state::on_change(s, move |p, _, _| refresh(p));

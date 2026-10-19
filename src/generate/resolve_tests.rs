@@ -101,6 +101,30 @@ fn console_profile_has_no_graphical_base() {
 }
 
 #[test]
+fn explicit_base_packages_replace_the_runit_metapackage() {
+    let mut p = Profile::new_default();
+    p.packages.base = vec!["coreutils".into(), "xbps".into()];
+    let pkgs = required_packages(&p);
+    assert!(pkgs.contains(&"coreutils".to_string()));
+    assert!(pkgs.contains(&"xbps".to_string()));
+    assert!(!pkgs.contains(&"base-system".to_string()));
+}
+
+#[test]
+fn explicit_desktop_packages_replace_graphical_and_desktop_metapackages() {
+    let mut p = Profile::new_default();
+    p.desktops = vec![Desktop::Xfce];
+    p.display_manager = Dm::Lightdm;
+    p.packages.desktop = vec!["xorg-server".into(), "xfce4-panel".into()];
+    let pkgs = required_packages(&p);
+    assert!(pkgs.contains(&"xorg-server".to_string()));
+    assert!(pkgs.contains(&"xfce4-panel".to_string()));
+    assert!(!pkgs.contains(&"xfce-core".to_string()));
+    assert!(!pkgs.contains(&"xorg-minimal".to_string()));
+    assert!(pkgs.contains(&"lightdm".to_string()));
+}
+
+#[test]
 fn install_packages_appends_extra_once() {
     let mut p = Profile::new_default();
     p.packages.extra = vec!["firefox".into(), "linux".into()];

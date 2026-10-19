@@ -182,6 +182,18 @@ fn list_entries_must_be_single_tokens() {
 }
 
 #[test]
+fn package_overrides_are_limited_to_supported_profile_contexts() {
+    let mut p = Profile::new_default();
+    p.init = Init::Dinit;
+    p.packages.base = vec!["coreutils".into()];
+    assert!(has_error(&p, "packages"));
+
+    let mut p = Profile::new_default();
+    p.packages.desktop = vec!["xorg-server".into()];
+    assert!(has_error(&p, "packages"));
+}
+
+#[test]
 fn names_starting_with_dash_are_rejected_as_option_injection() {
     let mut p = Profile::new_default();
     p.packages.extra = vec!["--rootdir=/".into()];
@@ -254,4 +266,19 @@ fn root_password_rejects_control_line_breaks() {
     assert!(validate(&p).1.is_some());
     p.live.root_password = Some("first\nsecond".into());
     assert!(has_error(&p, "live"));
+}
+
+#[test]
+fn explicit_dinit_base_requires_boot_services() {
+    let mut p = Profile::new_default();
+    p.init = Init::Dinit;
+    p.repos.presets = vec![RepoPreset::Voidlab];
+    p.packages.base = vec!["coreutils".into(), "xbps".into()];
+    assert!(has_error(&p, "packages"));
+    p.packages.base.push("dinit-void".into());
+    assert!(validate(&p).1.is_some());
+    let packages = crate::generate::required_packages(&p);
+    assert!(packages.contains(&"dinit-void".into()));
+    assert!(packages.contains(&"coreutils".into()));
+    assert!(!packages.contains(&"base-system-dinit".into()));
 }

@@ -32,13 +32,21 @@ fn owned<'a>(items: &'a [&'a str]) -> impl Iterator<Item = String> + 'a {
 
 pub fn required_packages(p: &Profile) -> Vec<String> {
     let mut out = vec![p.kernel.clone()];
-    out.extend(owned(init::base_packages(p.init)));
+    if p.packages.base.is_empty() {
+        out.extend(owned(init::base_packages(p.init)));
+    } else {
+        out.extend(p.packages.base.iter().cloned());
+    }
     out.extend(owned(init::initramfs_packages(p.init)));
     out.extend(owned(userland::packages(p.userland)));
     if !p.desktops.is_empty() {
-        out.extend(owned(desktop::GRAPHICAL_BASE));
-        for d in &p.desktops {
-            out.extend(owned(desktop::desktop_packages(*d)));
+        if p.packages.desktop.is_empty() {
+            out.extend(owned(desktop::GRAPHICAL_BASE));
+            for d in &p.desktops {
+                out.extend(owned(desktop::desktop_packages(*d)));
+            }
+        } else {
+            out.extend(p.packages.desktop.iter().cloned());
         }
     }
     out.extend(owned(desktop::dm_packages(p.display_manager)));

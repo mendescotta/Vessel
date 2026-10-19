@@ -68,6 +68,14 @@ fn de_presets<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<RepoPreset>,
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Packages {
+    /// Replace the init system's base metapackage with this explicit package list.
+    /// Empty keeps the init system's default base packages.
+    #[serde(default)]
+    pub base: Vec<String>,
+    /// Replace automatic graphical base and desktop metapackages with this list.
+    /// Empty keeps the selected desktop preset defaults.
+    #[serde(default)]
+    pub desktop: Vec<String>,
     #[serde(default)]
     pub extra: Vec<String>,
     #[serde(default)]
