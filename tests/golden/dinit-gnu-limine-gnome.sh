@@ -167,6 +167,8 @@ rm -rf "$ROOTFS/usr/lib/dracut/modules.d/01vmklive"
 
 # --- 6. squashfs: dmsquash-live layout ---
 rm -f "$ROOTFS/etc/resolv.conf"
+# Package scripts left the build root's machine-id; vmklive gives each live boot its own.
+rm -f "$ROOTFS/etc/machine-id" "$ROOTFS/var/lib/dbus/machine-id"
 umount_chroot
 # The cache only holds the .xbps files downloaded for this build; shipping it roughly doubles the image.
 if [ -d "$ROOTFS/var/cache/xbps" ]; then

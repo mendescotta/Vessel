@@ -26,6 +26,7 @@ const VMKLIVE: &[Asset] = &[
     asset!("vmklive/display-manager-autologin.sh", true),
     asset!("vmklive/getty-serial.sh", true),
     asset!("vmklive/locale.sh", true),
+    asset!("vmklive/machine-id.sh", true),
     asset!("vmklive/module-setup.sh", true),
     asset!("vmklive/mtd.sh", true),
     asset!("vmklive/nomodeset.sh", true),

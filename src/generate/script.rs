@@ -104,7 +104,12 @@ cp "$ROOTFS/boot/vmlinuz-$KVER" "$ISODIR/boot/vmlinuz"
     s.push_str(init::initramfs_stage(p.init));
 
     section(&mut s, 6, "squashfs", "dmsquash-live layout");
-    s.push_str("rm -f \"$ROOTFS/etc/resolv.conf\"\numount_chroot\n");
+    s.push_str(
+        "rm -f \"$ROOTFS/etc/resolv.conf\"\n\
+         # Package scripts left the build root's machine-id; vmklive gives each live boot its own.\n\
+         rm -f \"$ROOTFS/etc/machine-id\" \"$ROOTFS/var/lib/dbus/machine-id\"\n\
+         umount_chroot\n",
+    );
     if !p.packages.include_cache {
         s.push_str(
             "# The cache only holds the .xbps files downloaded for this build; shipping it roughly doubles the image.\n\
