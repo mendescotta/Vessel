@@ -113,6 +113,8 @@ VESSEL_IGNORE
 info "Installing 24 packages into $ROOTFS"
 XBPS_ARCH="$ARCH" xbps-install -S -y -r "$ROOTFS" -C "$ROOTFS/etc/xbps.d" "${REPO_ARGS[@]}" \
 	'linux' 'base-system-dinit' 'dinit-void' 'dracut' 'binutils' 'xz' 'device-mapper' 'dhclient' 'dracut-network' 'openresolv' 'dbus' 'elogind' 'polkit' 'NetworkManager' 'xorg-minimal' 'xorg-fonts' 'mesa-dri' 'pipewire' 'wireplumber' 'xdg-user-dirs' 'gnome-core' 'lightdm' 'lightdm-gtk3-greeter' 'firefox'
+# -y saved the signing key of every repository used above; the image trusts only Void's.
+find "$ROOTFS/var/db/xbps/keys" -name '*.plist' ! -name "$VOID_KEY.plist" -delete
 mount_chroot
 cp /etc/resolv.conf "$ROOTFS/etc/resolv.conf"
 chroot "$ROOTFS" xbps-reconfigure -fa

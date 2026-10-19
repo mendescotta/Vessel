@@ -300,7 +300,9 @@ cp -a "/var/db/xbps/keys/$VOID_KEY.plist" "$ROOTFS/var/db/xbps/keys/"
         sh_words(&install_packages(p))
     );
     s.push_str(
-        r#"mount_chroot
+        r#"# -y saved the signing key of every repository used above; the image trusts only Void's.
+find "$ROOTFS/var/db/xbps/keys" -name '*.plist' ! -name "$VOID_KEY.plist" -delete
+mount_chroot
 cp /etc/resolv.conf "$ROOTFS/etc/resolv.conf"
 chroot "$ROOTFS" xbps-reconfigure -fa
 "#,

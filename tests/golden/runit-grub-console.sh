@@ -118,6 +118,8 @@ cp -a "/var/db/xbps/keys/$VOID_KEY.plist" "$ROOTFS/var/db/xbps/keys/"
 info "Installing 9 packages into $ROOTFS"
 XBPS_ARCH="$ARCH" xbps-install -S -y -r "$ROOTFS" -C "$ROOTFS/etc/xbps.d" "${REPO_ARGS[@]}" \
 	'linux' 'base-system' 'dracut' 'binutils' 'xz' 'device-mapper' 'dhclient' 'dracut-network' 'openresolv'
+# -y saved the signing key of every repository used above; the image trusts only Void's.
+find "$ROOTFS/var/db/xbps/keys" -name '*.plist' ! -name "$VOID_KEY.plist" -delete
 mount_chroot
 cp /etc/resolv.conf "$ROOTFS/etc/resolv.conf"
 chroot "$ROOTFS" xbps-reconfigure -fa
