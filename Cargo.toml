@@ -16,7 +16,7 @@ glib = "0.20"
 adw = { package = "libadwaita", version = "0.7", features = ["v1_6"] }
 async-channel = "2"
 serde = { version = "1", features = ["derive"] }
-toml = "0.8"
+toml = "1.1"
 
 [profile.release]
 opt-level = 2
